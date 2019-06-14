@@ -13,7 +13,11 @@ const userSchema = new Schema({
     type: Date,
     required: true,
     default: new Date()
-  }
+  },
+  noteIds: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Notes'
+  }]
 })
 
 module.exports = model('Users', userSchema)

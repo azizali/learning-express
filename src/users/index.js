@@ -44,6 +44,7 @@ router.post('/', validateUser, (req, res, next)=>{
 router.get('/', (req, res, next)=>{
   User
     .find()
+    .populate('noteIds')
     .then(docs=>{
       res.json(docs)
     })
