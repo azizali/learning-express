@@ -1,5 +1,10 @@
+const mongoose = require('mongoose')
+const dbName = 'testabc'
+mongoose.connect(`mongodb://localhost:27017/${dbName}`, {useNewUrlParser: true});
+
 const express = require('express')
 const app = express()
+
 
 const usersRouter = require('./users/')
 const notesRouter = require('./notes/')

@@ -1,44 +1,104 @@
 const express = require('express')
-
-// const app = express()
 const router = express.Router()
 
-router.post('/:id', userReq, cleanUpUser)
+const User = require('./Model')
 
-function cleanUpUser(){
-  console.log('bye2')
+function validateUser (req, res, next){
+  const fields = []
+  const name = req.body.name
+  const age = req.body.age
+  
+  if(!name){
+    fields.push('name')
+  }
+
+  if(!age){
+    fields.push('age')
+  }
+
+  if(fields.length === 0){
+    next()
+  } else {
+    res
+      .status(403)
+      .send(fields.join(',') + ' are required')
+  }
+
 }
+router.post('/', validateUser, (req, res, next)=>{
+  const {name, age} = req.body
+  const userInstance = new User({ name, age })
 
-function userReq(req, res, next){
-  console.log('bye', req.special)
-  const { id } = req.params
-  const { info, profile } = req.query
-  const { isEmployee } = req.body
+  userInstance
+    .save()
+    .then((data)=>{
+      console.log(data)
+      res.json(data)
+    })
+    .catch((error)=>{
+      res.status(403).send(error)
+    })
 
-  res.send('hi ' + id + info + profile + isEmployee)
-  next()
-}
+})
 
 router.get('/', (req, res, next)=>{
-  res.format({
-    'text/plain': function () {
-      res.send('User')
-    },
+  User
+    .find()
+    .then(docs=>{
+      res.json(docs)
+    })
+    .catch(()=>{
+      res
+        .status(500)
+        .send('Something went wrong')
+    })
+})
+
+router.get('/:id', (req, res, next)=>{
+  const { id } = req.params
+  User
+    .findOne({_id: id})
+    .then(docs=>{
+      res.json(docs)
+    })
+    .catch(()=>{
+      res
+        .status(500)
+        .send('Something went wrong')
+    })
+})
+
+router.put('/:id', (req, res, next)=>{
+  const { id } = req.params
+  User
+    .findOneAndUpdate({_id: id}, {
+      ...req.body
+    }, { new: true })
+    .then(docs=>{
+      res.json(docs)
+    })
+    .catch(()=>{
+      res
+        .status(500)
+        .send('Something went wrong')
+    })
+})
+
+router.delete('/:id', (req, res, next)=>{
+  const { id } = req.params
   
-    'text/html': function () {
-      res.send('<p>User HTML</p>')
-    },
-  
-    'application/json': function () {
-      res.send({ user: 'I am JSON User' })
-    },
-  
-    'default': function () {
-      // log the request and respond with 406
-      res.status(406).send('Not Acceptable')
-    }
-  })
-  next()
-}, cleanUpUser)
+  User
+    .deleteOne({_id: id})
+    .then(docs=>{
+      res.json(docs)
+    })
+    .catch(()=>{
+      res
+        .status(500)
+        .send('Something went wrong')
+    })
+})
+
+
 
 module.exports = router
