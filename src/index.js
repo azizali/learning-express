@@ -5,6 +5,15 @@ const express = require('express')
 // App
 const app = express()
 
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
+app.use((req, res, next)=>{
+  console.log('hi')
+  req.special = 'salesforce'
+  next()
+})
+
 // CRUD
 // CREATE READ UPDATE DELETE
 
@@ -17,6 +26,22 @@ app.get('/', (req, res, next)=>{
     //.download
     //.json()
 })
+
+app.post('/user/:id', userReq, cleanUpUser)
+
+function cleanUpUser(){
+  console.log('bye2')
+}
+
+function userReq(req, res, next){
+  console.log('bye', req.special)
+  const { id } = req.params
+  const { info, profile } = req.query
+  const { isEmployee } = req.body
+
+  res.send('hi ' + id + info + profile + isEmployee)
+  next()
+}
 
 app.get('/user', (req, res, next)=>{
   res.format({
@@ -37,11 +62,12 @@ app.get('/user', (req, res, next)=>{
       res.status(406).send('Not Acceptable')
     }
   })
-})
+  next()
+}, cleanUpUser)
 
 app.post('/', (req, res, next)=>{
   res.send('Post me')
-})
+}, cleanUpUser)
 
 app.put('/', (req, res, next)=>{
   res.send('Put')
