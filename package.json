@@ -1,0 +1,14 @@
+{
+  "name": "learning-express",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/index.js",
+  "scripts": {
+    "start": "nodemon ./src/index.js"
+  },
+  "author": "Aziz Ali",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
